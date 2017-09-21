@@ -46,7 +46,7 @@ SVIFT.vis.icon = (function (data, xml, container) {
       .attr("fill", "#71609B")
 
 
-    var IconData = [1,2,3,4,5];
+    var IconData = [1,2,3,4,5,1,2,3,4,5];
     module.d3config.icons = module.d3config.iconRow
       .append('g')
       .selectAll(".icons")
@@ -70,7 +70,7 @@ SVIFT.vis.icon = (function (data, xml, container) {
   module.resize = function () {
 
     var amountRows = data.data.data.length;
-    var amountIcons = 5;
+    var amountIcons = 10;
     var width = module.container.node().offsetWidth - module.config.margin.left - module.config.margin.right;
     var height = module.container.node().offsetHeight - module.config.margin.top - module.config.margin.bottom;
 
@@ -112,7 +112,7 @@ SVIFT.vis.icon = (function (data, xml, container) {
 
     var allIconsWidth = width * 0.6;
     var nonIconsWidth = width * 0.4;
-    var amountOfPadding = 0.5;
+    var amountOfPadding = 0.2;
     var iconWidth = (allIconsWidth / amountIcons);
     var iconPadding = iconWidth*amountOfPadding;
     iconWidth = iconWidth - iconPadding;
