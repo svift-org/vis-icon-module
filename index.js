@@ -12,59 +12,126 @@ SVIFT.vis.icon = (function (data, xml, container) {
 
   module.setup = function () {
 
+    //setup main title
+    module.d3config.mainTitle = module.g.append('g')
+      .append("text")
+      .text(data.data.title)
+      .attr("id", "title")
+      .attr("fill", "#71609B")
 
-    module.d3config.iconRow = module.g.append('g').selectAll(".row")
+
+    //setup row container for all rows
+    module.d3config.iconRowContainer = module.g.append('g')
+      .attr("id", "rowContainer")
+
+    //setup row
+    module.d3config.iconRow = module.d3config.iconRowContainer
+      .selectAll(".row")
       .data(data.data.data)
       .enter().append("g")
-      // .attr("transform","translate(80,0)")
       .attr("class", "row");
 
-    module.d3config.rowContent = module.d3config.iconRow
-      // .data(function(d) { console.log(d); return d; })
-      // .enter()
+    //Set up desctription text
+    module.d3config.rowText = module.d3config.iconRow
+      .append("text")
+      .text(function(d,i) { return d[0]} )
+      .attr("font-family", "sans-serif")
+      .attr("fill", "#71609B")
+
+    //Set up value text
+    module.d3config.rowValueText = module.d3config.iconRow
+      .append("text")
+      .text(function(d,i) { return d[1]} )
+      .attr("font-family", "sans-serif")
+      .attr("fill", "#71609B")
+
+
+    var IconData = [1,2,3,4,5];
+    module.d3config.icons = module.d3config.iconRow
+      .append('g')
+      .selectAll(".icons")
+      .data(IconData)
+      .enter()
+      .append(function(){return xml.documentElement.cloneNode( true );})
+
+
+
+
+
+
+    module.d3config.rowRects = module.d3config.iconRow
       .append("rect")
       .attr("class","content")
       .style("fill-opacity", "0")
-      .style("stroke", "#000")
-
-
-    module.d3config.rowText = module.d3config.iconRow
-      .append("text")
-      .text(function(d,i) { return d[0]})
-      .attr("font-family", "sans-serif")
-      .attr("fill", "#71609B")
-      // .attr("text-anchor", "middle");
-
+      .style("stroke", "#E2E2E2")
   };
 
 
   module.resize = function () {
 
-    var width = module.container.node().offsetWidth - module.config.margin.left - module.config.margin.right,
-    height = module.container.node().offsetHeight - module.config.margin.top - module.config.margin.bottom;
-    var maxSize = Math.min(width,height);
-    var rowHeight = maxSize / (data.data.data.length);
+    var amountRows = data.data.data.length;
+    var amountIcons = 5;
+    var width = module.container.node().offsetWidth - module.config.margin.left - module.config.margin.right;
+    var height = module.container.node().offsetHeight - module.config.margin.top - module.config.margin.bottom;
 
-    //Move every icon row down by row height
-    module.d3config.iconRow.attr("transform",function(d,i) { return "translate(0,"+rowHeight * i+")"})
+    var textSize = width/15;
+    var heightAllRows = height - textSize;
+    var maxSize = Math.min(width,heightAllRows);
+    var amountRows = data.data.data.length;
+    var rowHeight = maxSize / amountRows;
 
-    module.d3config.rowText.attr("transform",function(d,i) { return "translate(0,"+rowHeight * i+")"})
+    module.d3config.mainTitle
+      .attr("y",textSize)
+      .attr("x",width/2)
+      .attr("text-anchor", "middle")
+      .attr("font-size",width/15)
 
-    module.d3config.rowContent
-      .attr("x", function(d,i) { return 0 })
-      .attr("y", 10)
+    module.d3config.iconRowContainer
+      .attr("transform","translate(0,"+textSize+")")
+
+    //Set position of every row
+    module.d3config.iconRow
+      .attr("transform",function(d,i) { return "translate(0,"+rowHeight * i+")"})
+
+
+    //Calc the sizes
+    var maxTextWidth = width * 0.3;
+    var maxValueWidth = width * 0.1;
+
+    //Fit text within a row
+    module.d3config.rowText
+      .attr("y",(rowHeight/2) + (rowHeight/4))
+      .attr("font-size", function(d) { console.log(this.getComputedTextLength()); return rowHeight/4})
+
+    //Value Text - the number
+    module.d3config.rowValueText 
+      .attr("y",(rowHeight/2) + (rowHeight/4))
+      .attr("x",maxTextWidth )
+      .attr("font-size",rowHeight/4)
+
+
+    var allIconsWidth = width * 0.6;
+    var nonIconsWidth = width * 0.4;
+    var amountOfPadding = 0.5;
+    var iconWidth = (allIconsWidth / amountIcons);
+    var iconPadding = iconWidth*amountOfPadding;
+    iconWidth = iconWidth - iconPadding;
+
+    module.d3config.icons
+      .attr("y",(rowHeight/2) - (iconWidth /4) )
+      .attr("x", function(d,i) { console.log(d);return i * iconWidth + nonIconsWidth + (i*iconPadding) }) //(i*2) 
+      .attr("font-size",rowHeight/4)
+      .attr("height",iconWidth)
+      .attr("width",iconWidth);
+
+
+
+    module.d3config.rowRects
       .attr("width", width)
       .attr("height", rowHeight)
 
-    // //ToDo: prevent text from being cut out
-    // var fontSize = cellSize/1.5;
-    // module.d3config.text
-    //   .attr("x", maxSize / 2)
-    //   .attr("y", maxSize + fontSize)
-    //   .attr("font-size", fontSize)
 
-
-    // document.body.appendChild(xml.documentElement);
+    // .node().getComputedTextLength()
 
 
   };

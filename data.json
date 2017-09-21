@@ -13,6 +13,9 @@
         ["Berlin", 76],
         ["Tokio", 33],
         ["Paris", 20]
-      ]
+      ],
+      "title": "Your title",
+      "subTitle": "Your sub title",
+      "attribution": "Some attribution here"
     }
   }
