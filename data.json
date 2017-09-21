@@ -1,0 +1,18 @@
+{
+    "params":{
+      "dev":true
+    },
+    "vis":{
+      "type":"struggle"
+    },
+    "data":{
+      "columns":["Text","Value"],
+      "types":["string","int"],
+      "data":[
+        ["New York", 90],
+        ["Berlin", 76],
+        ["Tokio", 33],
+        ["Paris", 20]
+      ]
+    }
+  }
