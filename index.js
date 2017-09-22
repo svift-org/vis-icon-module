@@ -7,11 +7,14 @@ SVIFT.vis.icon = (function (data, xml, container) {
   module.d3config = {
     ease:d3.easeCubicInOut, 
     // interpolate: d3.interpolate(0,data.data.data[0])
-    amountIcons: 10
+    amountIcons: 10,
+    interpolate: []
   };
 
 
   module.setup = function () {
+
+    module.d3config.interpolate = d3.interpolate(0,module.d3config.amountIcons);
 
     //setup main title
     module.d3config.mainTitle = module.g.append('g')
@@ -19,13 +22,14 @@ SVIFT.vis.icon = (function (data, xml, container) {
       .text(data.data.title)
       .attr("id", "title")
       .attr("fill", "#71609B")
+      .attr("font-family", "sans-serif")
 
 
-    //setup row container for all rows
+    //setup container for all rows
     module.d3config.iconRowContainer = module.g.append('g')
       .attr("id", "rowContainer")
 
-    //setup row
+    //setup a container for each row
     module.d3config.iconRow = module.d3config.iconRowContainer
       .selectAll(".row")
       .data(data.data.data)
@@ -46,7 +50,7 @@ SVIFT.vis.icon = (function (data, xml, container) {
       .attr("font-family", "sans-serif")
       .attr("fill", "#71609B")
 
-
+    //Check out how many icons are needed for each entry
     var IconData = function(d){
       var data = [];
       var noIcons = Math.round(d[1]/module.d3config.amountIcons);
@@ -56,21 +60,23 @@ SVIFT.vis.icon = (function (data, xml, container) {
       return data;
     }
 
+
     module.d3config.icons = module.d3config.iconRow
       .append('g')
       .selectAll(".icons")
       .data(function(d){return IconData(d)})
       .enter()
       .append(function(d){return xml.documentElement.cloneNode( true );})
+      .attr("display", "none")
+
+    module.d3config.icons.selectAll("g").style("stroke", "#71609B") //just in case: chnage the stroke color of icon
 
 
-
-
-    module.d3config.rowRects = module.d3config.iconRow
-      .append("rect")
-      .attr("class","content")
-      .style("fill-opacity", "0")
-      .style("stroke", "#E2E2E2")
+    // module.d3config.rowRects = module.d3config.iconRow
+    //   .append("rect")
+    //   .attr("class","content")
+    //   .style("fill-opacity", "0")
+    //   .style("stroke", "#E2E2E2")
   };
 
 
@@ -134,22 +140,18 @@ SVIFT.vis.icon = (function (data, xml, container) {
       .attr("width",iconWidth);
 
 
-
-    module.d3config.rowRects
-      .attr("width", width)
-      .attr("height", rowHeight)
-
-
+    // module.d3config.rowRects
+    //   .attr("width", width)
+    //   .attr("height", rowHeight)
 
   };
 
   module.drawBars = function(t){
 
-    // var interpolation = Math.round(module.d3config.interpolate(module.d3config.ease(t))) -1;
-    // var rects = d3.selectAll("rect")
-    //     .filter(function(d, i) { return i <= interpolation; })
-    //     .style("fill", "#71609B")
-
+    var interpolation = Math.round(module.d3config.interpolate(module.d3config.ease(t)));
+    var icons = module.d3config.icons
+        .filter(function(d, i) {return i <= interpolation; })
+        .attr("display", "show")
   };
 
   module.timeline = {
