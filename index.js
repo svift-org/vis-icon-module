@@ -3,14 +3,11 @@ SVIFT.vis.icon = (function (data, xml, container) {
    // Module object
   var module = SVIFT.vis.base(data, container);
 
- 
   module.d3config = {
     ease:d3.easeCubicInOut, 
-    // interpolate: d3.interpolate(0,data.data.data[0])
     amountIcons: 10,
     interpolate: []
   };
-
 
   module.setup = function () {
 
@@ -50,33 +47,45 @@ SVIFT.vis.icon = (function (data, xml, container) {
       .attr("font-family", "sans-serif")
       .attr("fill", "#71609B")
 
+
     //Check out how many icons are needed for each entry
+    // var IconData = function(d){
+    //   var data = [];
+    //   var noIcons = Math.round(d[1]/module.d3config.amountIcons);
+    //   for (var i = 0; i < noIcons; i++) {
+    //     data.push(i);
+    //   }
+    //   return data;
+    // }
+
     var IconData = function(d){
       var data = [];
-      var noIcons = Math.round(d[1]/module.d3config.amountIcons);
-      for (var i = 0; i < noIcons; i++) {
-        data.push(i);
+      var noHighlightedIcons = Math.round(d[1]/module.d3config.amountIcons);
+      for (var i = 0; i < module.d3config.amountIcons; i++) {
+        if(i<noHighlightedIcons){
+          data.push(1);
+        }
+        else{
+          data.push(0);
+        }
       }
       return data;
     }
 
 
+    //Icons 
     module.d3config.icons = module.d3config.iconRow
       .append('g')
       .selectAll(".icons")
       .data(function(d){return IconData(d)})
       .enter()
       .append(function(d){return xml.documentElement.cloneNode( true );})
-      .attr("display", "none")
+      // .attr("display", "none")
 
-    module.d3config.icons.selectAll("g").style("stroke", "#71609B") //just in case: chnage the stroke color of icon
+    module.d3config.icons.selectAll("g").style("stroke", "#ddd") //just in case: chnage the stroke color of icon
+    module.d3config.icons.selectAll("g").style("fill", "#ddd") 
 
 
-    // module.d3config.rowRects = module.d3config.iconRow
-    //   .append("rect")
-    //   .attr("class","content")
-    //   .style("fill-opacity", "0")
-    //   .style("stroke", "#E2E2E2")
   };
 
 
@@ -150,8 +159,12 @@ SVIFT.vis.icon = (function (data, xml, container) {
 
     var interpolation = Math.round(module.d3config.interpolate(module.d3config.ease(t)));
     var icons = module.d3config.icons
-        .filter(function(d, i) {return i <= interpolation; })
+        .filter(function(d, i) {return i <= interpolation && d == 1; })
         .attr("display", "show")
+
+    icons.selectAll("g").style("stroke", "#71609B") //just in case: chnage the stroke color of icon
+    icons.selectAll("g").style("fill", "#71609B") 
+
   };
 
   module.timeline = {
