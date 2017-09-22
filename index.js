@@ -1,12 +1,13 @@
 SVIFT.vis.icon = (function (data, xml, container) {
+
    // Module object
   var module = SVIFT.vis.base(data, container);
 
-  //Grid Function taken from https://bl.ocks.org/cagrimmett/07f8c8daea00946b9e704e3efcbd5739/bd1f4c0c33d8af6f64535b7963b0da2e6499fc31
  
   module.d3config = {
     ease:d3.easeCubicInOut, 
     // interpolate: d3.interpolate(0,data.data.data[0])
+    amountIcons: 10
   };
 
 
@@ -34,7 +35,7 @@ SVIFT.vis.icon = (function (data, xml, container) {
     //Set up desctription text
     module.d3config.rowText = module.d3config.iconRow
       .append("text")
-      .text(function(d,i) { return d[0]} )
+      .text(function(d,i) { return d[0].toUpperCase()} )
       .attr("font-family", "sans-serif")
       .attr("fill", "#71609B")
 
@@ -46,15 +47,21 @@ SVIFT.vis.icon = (function (data, xml, container) {
       .attr("fill", "#71609B")
 
 
-    var IconData = [1,2,3,4,5,1,2,3,4,5];
+    var IconData = function(d){
+      var data = [];
+      var noIcons = Math.round(d[1]/module.d3config.amountIcons);
+      for (var i = 0; i < noIcons; i++) {
+        data.push(i);
+      }
+      return data;
+    }
+
     module.d3config.icons = module.d3config.iconRow
       .append('g')
       .selectAll(".icons")
-      .data(IconData)
+      .data(function(d){return IconData(d)})
       .enter()
-      .append(function(){return xml.documentElement.cloneNode( true );})
-
-
+      .append(function(d){return xml.documentElement.cloneNode( true );})
 
 
 
@@ -70,7 +77,7 @@ SVIFT.vis.icon = (function (data, xml, container) {
   module.resize = function () {
 
     var amountRows = data.data.data.length;
-    var amountIcons = 10;
+    
     var width = module.container.node().offsetWidth - module.config.margin.left - module.config.margin.right;
     var height = module.container.node().offsetHeight - module.config.margin.top - module.config.margin.bottom;
 
@@ -98,28 +105,30 @@ SVIFT.vis.icon = (function (data, xml, container) {
     var maxTextWidth = width * 0.3;
     var maxValueWidth = width * 0.1;
 
+
     //Fit text within a row
     module.d3config.rowText
-      .attr("y",(rowHeight/2) + (rowHeight/4))
-      .attr("font-size", function(d) { console.log(this.getComputedTextLength()); return rowHeight/4})
+      .attr("y",(rowHeight/2) + (rowHeight/8))
+      .attr("font-size", function(d) {return rowHeight/8})
+      // .attr("font-size", function(d) { return this.getComputedTextLength() + "px"; })
 
     //Value Text - the number
     module.d3config.rowValueText 
-      .attr("y",(rowHeight/2) + (rowHeight/4))
+      .attr("y",(rowHeight/2) + (rowHeight/8))
       .attr("x",maxTextWidth )
-      .attr("font-size",rowHeight/4)
+      .attr("font-size",rowHeight/8)
 
 
     var allIconsWidth = width * 0.6;
     var nonIconsWidth = width * 0.4;
     var amountOfPadding = 0.2;
-    var iconWidth = (allIconsWidth / amountIcons);
+    var iconWidth = (allIconsWidth / module.d3config.amountIcons);
     var iconPadding = iconWidth*amountOfPadding;
     iconWidth = iconWidth - iconPadding;
 
     module.d3config.icons
       .attr("y",(rowHeight/2) - (iconWidth /4) )
-      .attr("x", function(d,i) { console.log(d);return i * iconWidth + nonIconsWidth + (i*iconPadding) }) //(i*2) 
+      .attr("x", function(d,i) {return i * iconWidth + nonIconsWidth + (i*iconPadding) }) //(i*2) 
       .attr("font-size",rowHeight/4)
       .attr("height",iconWidth)
       .attr("width",iconWidth);
@@ -130,8 +139,6 @@ SVIFT.vis.icon = (function (data, xml, container) {
       .attr("width", width)
       .attr("height", rowHeight)
 
-
-    // .node().getComputedTextLength()
 
 
   };

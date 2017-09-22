@@ -9,7 +9,7 @@
       "columns":["Text","Value"],
       "types":["string","int"],
       "data":[
-        ["New York", 90],
+        ["New York", 96],
         ["Berlin", 76],
         ["Tokio", 33],
         ["Paris", 20]
